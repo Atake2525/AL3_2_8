@@ -2,14 +2,18 @@
 
 #include "Matrix4x4.h"
 #include "Vector3.h"
+#include "AABB.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <cassert>
 
 // 代入演算子オーバーロード
 // Vector3の足し算
 Vector3& operator+=(Vector3& lhs, const Vector3& rhv);
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
+
+bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 
 // 代入演算子オーバーロード
 // Vector3の掛け算
@@ -40,3 +44,6 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
 // ３次元アフィン変換行列
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+// 3, 座標変換
+Vector3 MathTransform(const Vector3& vector, const Matrix4x4& matrix);

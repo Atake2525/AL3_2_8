@@ -17,6 +17,9 @@
 #include "Player.h"
 #include "MapChipField.h"
 #include "CameraController.h"
+#include "Enemy.h"
+#include "AABB.h"
+#include "DeathParticles.h"
 
 /// <summary>
 /// ゲームシーン
@@ -48,6 +51,12 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	// すべての当たり判定を行う
+	void CheckAllCollisions();
+
+	// フェーズの切り替え
+	void ChangePhase();
 	
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
@@ -66,6 +75,8 @@ public: // メンバ関数
 	// 追従カメラ
 	CameraController* cameraController_ = nullptr;
 
+	// デスフラグのgetter
+	bool IsFinished() const { return finished_; }
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -83,6 +94,9 @@ private: // メンバ変数
 	
 	uint32_t texturehandle_ = 0;
 
+	std::list<Enemy*> enemies_;
+
+	Model* modelEnemy_ = nullptr;
 	// マップチップフィールド
 	MapChipField* mapChipField_;
 
@@ -90,6 +104,20 @@ private: // メンバ変数
 
 	void GenerateBlocks();
 
+	// パーティクル
+	DeathParticles* deathParticles_ = nullptr;
+	Model* deathParticleModel_ = nullptr;
+
+	// ゲームのフェーズ(型)
+	enum class Phase {
+		kPlay, // ゲームプレイ
+		kDeath, // デス演出
+	};
+
+	// ゲームの現在フェーズ(変数)
+	Phase phase_;
+
+	bool finished_ = false;
 
 
 	/// <summary>

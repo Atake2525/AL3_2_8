@@ -40,7 +40,20 @@ float easeInOut(float t, float x1, float x2) {
 	return x;
 };
 
-// Lerp
+bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&     // x軸
+		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && // y軸
+		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z)) // z軸
+	{
+		return true;
+	}
+	return false;
+	
+}
+
+
+// 
+
 float Lerp(float x1, float x2, float t) {
 	return (1.0f - t) * x1 + t * x2;
 };
@@ -146,3 +159,18 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 
 	return ans;
 };
+
+Vector3 MathTransform(const Vector3& vector, const Matrix4x4& matrix) {
+	Vector3 ans;
+
+	ans.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
+	ans.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
+	ans.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + 1.0f * matrix.m[3][2];
+	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + 1.0f * matrix.m[3][3];
+	assert(w != 0.0f);
+	ans.x /= w;
+	ans.y /= w;
+	ans.z /= w;
+
+	return ans;
+}

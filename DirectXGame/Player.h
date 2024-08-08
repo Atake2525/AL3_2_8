@@ -1,7 +1,9 @@
 #include "Model.h"
 #include "WorldTransform.h"
+#include "AABB.h"
 
 class MapChipField;
+class Enemy;
 
 #pragma once
 class Player {
@@ -14,8 +16,14 @@ public:
 		bool isWallColFlag = false;
 		// 着地フラグ
 		bool landing = false;
+		bool isWallHit = false;
 		Vector3 MovePoint;
 	};
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
+
+	Vector3 GetWorldPosition();
 
 	static inline const float kBlank = 1.0f;
 
@@ -61,13 +69,21 @@ public:
 
 	void MapCollisionUpside(CollisionMapInfo& info);
 	void MapCollisionUnderside(CollisionMapInfo& info);
+	void MapCollisionLeftside(CollisionMapInfo& info);
+	void MapCollisionRightside(CollisionMapInfo& info);
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 	void changeOnGround(const CollisionMapInfo& info);
 
+	// AABBを取得
+	AABB GetAABB();
+
+	// 衝突応答
+	void OnCollision(const Enemy* enemy);
+
 private:
-	// マップてぃっぷによるフィールド
+	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -112,6 +128,13 @@ private:
 	static inline const float kLimitFallSpeed = 5.0f;
 	// ジャンプ初速(上方向)
 	static inline const float kJumpAcceleration = 0.5f;
+
+
+	//// ワールド座標を取得
+	//Vector3 GetWorldPosition();
+
+	// デスフラグ
+	bool isDead_ = false;
 
 	// モデル
 	Model* model_ = nullptr;

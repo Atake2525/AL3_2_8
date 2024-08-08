@@ -1,9 +1,9 @@
 #include "CameraController.h"
-#include "Player.h"
 #include "MathUtilityForText.h"
+#include "Player.h"
 #include <algorithm>
 
-void CameraController::Initialize() { 
+void CameraController::Initialize() {
 	viewProjection_.Initialize();
 	movableArea_ = {1, 100, 2, 100};
 };
@@ -13,16 +13,22 @@ void CameraController::Update() {
 	const WorldTransform& targetWorldTransform = target_->GetworldTransform();
 	const Vector3& targetVelocity = target_->GetVelocity();
 	// 追従対象とオフセットと追従対象の速度カメラの目標座標を計算
-	movePoint_ = targetWorldTransform.translation_ + targetOffset_  + targetVelocity * kVelocityBias;
+	movePoint_ = targetWorldTransform.translation_ + targetOffset_ + targetVelocity * kVelocityBias;
 
 	// 座標保管によりゆったり追従
 	viewProjection_.translation_ = Lerp(viewProjection_.translation_, movePoint_, kInterpolationRate);
-	
+
 	// 移動範囲制限
 	viewProjection_.translation_.x = (std::max)(viewProjection_.translation_.x, movableArea_.left);
 	viewProjection_.translation_.x = (std::min)(viewProjection_.translation_.x, movableArea_.right);
 	viewProjection_.translation_.y = (std::max)(viewProjection_.translation_.y, movableArea_.bottom);
 	viewProjection_.translation_.y = (std::min)(viewProjection_.translation_.y, movableArea_.top);
+
+	// 追従対象が画面外に出ないように補正
+	viewProjection_.translation_.x = (std::max)(viewProjection_.translation_.x, targetWorldTransform.translation_.x + magine_.left);
+	viewProjection_.translation_.x = (std::min)(viewProjection_.translation_.x, targetWorldTransform.translation_.x + magine_.right);
+	viewProjection_.translation_.y = (std::max)(viewProjection_.translation_.y, targetWorldTransform.translation_.y + magine_.bottom);
+	viewProjection_.translation_.y = (std::min)(viewProjection_.translation_.y, targetWorldTransform.translation_.y + magine_.top);
 
 	// 行列を更新する
 	viewProjection_.UpdateMatrix();
